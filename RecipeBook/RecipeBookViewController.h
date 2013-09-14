@@ -15,4 +15,5 @@
 @property (nonatomic, strong) IBOutlet UITableView *tableView;
 
 
++(CLLocation*) getCurrentLocation;
 @end

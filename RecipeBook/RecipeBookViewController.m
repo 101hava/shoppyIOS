@@ -8,13 +8,20 @@
 
 #import "RecipeBookViewController.h"
 #import "RecipeDetailViewController.h"
+#import "MapViewController.h"
 
 #define AMPERSAND @"&"
+#define BUS_NAME  @"BusNum"
+#define SOURCE    @"Source"
+#define DESTINATION @"Destination"
+#define BUS_TYPE    @"BusType"
+
+static CLLocation *bestEffortAtLocation;
 
 @interface RecipeBookViewController ()
 
 @property(nonatomic, strong)   CLLocationManager *locationManager;
-@property(nonatomic, strong)    CLLocation *bestEffortAtLocation;
+
 
 @end
 
@@ -26,7 +33,7 @@
 
 @synthesize tableView = _tableView;
 @synthesize locationManager;
-@synthesize bestEffortAtLocation;
+
 
 - (void)viewDidLoad
 {
@@ -42,7 +49,10 @@
     // recipes = [NSArray arrayWithObjects:@"Egg Benedict", @"Mushroom Risotto", @"Full Breakfast", @"Hamburger", @"Ham and Egg Sandwich", @"Creme Brelee", @"White Chocolate Donut", @"Starbucks Coffee", @"Vegetable Curry", @"Instant Noodle with Egg", @"Noodle with BBQ Pork", @"Japanese Noodle with Pork", @"Green Tea", @"Thai Shrimp Cake", @"Angry Birds Cake", @"Ham and Cheese Panini", nil];
 }
 
-
++(CLLocation*) getCurrentLocation
+{
+    return bestEffortAtLocation;
+}
 
 -(NSString*) addFKParams:(NSDictionary*)paramsDict ToUrl:(NSString*)uriStr
 {
@@ -130,8 +140,8 @@
     NSArray *results = [res objectForKey:@"items"];
     [recipes removeAllObjects];
     for (NSDictionary *result in results) {
-        NSString *nameStr = [result objectForKey:@"name"];
-        [recipes addObject:nameStr];
+        //NSString *nameStr = [result objectForKey:@"name"];
+        [recipes addObject:result];
     }
     
     [self.tableView reloadData];
@@ -196,6 +206,11 @@
     }
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 50;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *simpleTableIdentifier = @"RecipeCell";
@@ -209,7 +224,8 @@
     if (tableView == self.searchDisplayController.searchResultsTableView) {
         cell.textLabel.text = [searchResults objectAtIndex:indexPath.row];
     } else {
-        cell.textLabel.text = [recipes objectAtIndex:indexPath.row];
+        NSDictionary* busDetails = [recipes objectAtIndex:indexPath.row];
+        [self getView:busDetails AndCell:cell];
     }
     
     return cell;
@@ -217,9 +233,19 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (tableView == self.searchDisplayController.searchResultsTableView) {
-        [self performSegueWithIdentifier: @"showRecipeDetail" sender: self];
-    }
+//    //if (tableView == self.searchDisplayController.searchResultsTableView)
+//    {
+//        [self performSegueWithIdentifier: @"gotomap" sender: self];
+//    }
+    
+    
+    CLLocationDegrees lat = 12.917745600000000000;
+    CLLocationDegrees longi = 77.623788300000000000;
+    CLLocationCoordinate2D destination =  CLLocationCoordinate2DMake(lat,longi);
+    
+    CMMapPoint* mapPoint = [CMMapPoint mapPointWithCoordinate:destination];
+    
+    [CMMapLauncher launchMapApp:CMMapAppGoogleMaps forDirectionsFrom:[CMMapPoint currentLocation] to:mapPoint];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -234,7 +260,7 @@
             
         } else {
             indexPath = [self.tableView indexPathForSelectedRow];
-            destViewController.recipeName = [recipes objectAtIndex:indexPath.row];
+            //destViewController.recipeName = [recipes objectAtIndex:indexPath.row];
         }
     }
     
@@ -247,7 +273,7 @@
     //                                    searchText];
     //
     [self buildRequest:searchText];
-    searchResults = recipes; //[recipes filteredArrayUsingPredicate:resultPredicate];
+    
 }
 
 
@@ -271,6 +297,52 @@
     self.searchDisplayController.active = false;
     NSString* searchString = searchBar.text;
     [self filterContentForSearchText:searchString scope:nil];
+}
+
+
+-(void) getView:(NSDictionary*)busDict AndCell:(UITableViewCell*) cell
+{
+    if(busDict)
+    {
+        int y = 5;
+        int x = 5;
+        int width = cell.frame.size.width;
+        int eachHeight = 20;
+        
+        if([self validateServiceKey:BUS_NAME inDict:busDict])
+        {
+            CGRect labelFrame = CGRectMake(x, y, width, eachHeight);
+            UILabel* titleLabel = [[UILabel alloc] initWithFrame:labelFrame];
+            titleLabel.backgroundColor = [UIColor clearColor];
+            titleLabel.text = [NSString stringWithFormat:@"BusName: %@",[busDict objectForKey:BUS_NAME]];
+            y+=eachHeight;
+            [cell.contentView addSubview:titleLabel];
+        }
+        
+        if([self validateServiceKey:BUS_TYPE inDict:busDict])
+        {
+            CGRect labelFrame = CGRectMake(x, y, width, eachHeight);
+            UILabel* titleLabel = [[UILabel alloc] initWithFrame:labelFrame];
+            titleLabel.backgroundColor = [UIColor clearColor];
+            titleLabel.text = [NSString stringWithFormat:@"BusType: %@",[busDict objectForKey:BUS_TYPE]];
+            y+=eachHeight;
+            [cell.contentView addSubview:titleLabel];
+        }
+    }
+}
+
+-(BOOL)validateServiceKey:(NSString*) str inDict:(NSDictionary*) dict
+{
+    BOOL result = NO;
+    if ([dict isKindOfClass:[NSDictionary class]]) {
+        if ([[dict allKeys]count]>0) {
+            NSString* tempStr = [dict objectForKey:str];
+            if (tempStr && ![tempStr isEqualToString:@""]) {
+                result =  YES;
+            }
+        }
+    }
+    return result;
 }
 
 @end

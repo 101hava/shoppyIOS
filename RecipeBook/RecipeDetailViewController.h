@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CMMapLauncher.h"
 
 @interface RecipeDetailViewController : UIViewController
 

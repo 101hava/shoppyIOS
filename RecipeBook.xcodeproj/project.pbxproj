@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		89F2B3FF17E4B5540059E80F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89F2B3FE17E4B5540059E80F /* CoreLocation.framework */; };
+		89F2B40317E4EE530059E80F /* CMMapLauncher.m in Sources */ = {isa = PBXBuildFile; fileRef = 89F2B40217E4EE530059E80F /* CMMapLauncher.m */; };
+		89F2B40517E4EF150059E80F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89F2B40417E4EF150059E80F /* MapKit.framework */; };
+		89F2B40817E4F1110059E80F /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89F2B40717E4F1110059E80F /* MapViewController.m */; };
 		F419149E158D558600E54887 /* RecipeDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F419149D158D558600E54887 /* RecipeDetailViewController.m */; };
 		F4379A48159741E700CAD93E /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4379A47159741E600CAD93E /* AboutViewController.m */; };
 		F4379A4C1597775500CAD93E /* about.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F4379A4A1597775500CAD93E /* about.jpg */; };
@@ -24,6 +27,11 @@
 
 /* Begin PBXFileReference section */
 		89F2B3FE17E4B5540059E80F /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		89F2B40117E4EE530059E80F /* CMMapLauncher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMMapLauncher.h; sourceTree = "<group>"; };
+		89F2B40217E4EE530059E80F /* CMMapLauncher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMMapLauncher.m; sourceTree = "<group>"; };
+		89F2B40417E4EF150059E80F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		89F2B40617E4F1110059E80F /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
+		89F2B40717E4F1110059E80F /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
 		F419149C158D558600E54887 /* RecipeDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecipeDetailViewController.h; sourceTree = "<group>"; };
 		F419149D158D558600E54887 /* RecipeDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecipeDetailViewController.m; sourceTree = "<group>"; };
 		F4379A46159741E600CAD93E /* AboutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutViewController.h; sourceTree = "<group>"; };
@@ -50,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				89F2B40517E4EF150059E80F /* MapKit.framework in Frameworks */,
 				89F2B3FF17E4B5540059E80F /* CoreLocation.framework in Frameworks */,
 				F4AA6C2C1589A2DF0093D97E /* UIKit.framework in Frameworks */,
 				F4AA6C2E1589A2DF0093D97E /* Foundation.framework in Frameworks */,
@@ -60,9 +69,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		89F2B40017E4EE530059E80F /* CMMapLauncher */ = {
+			isa = PBXGroup;
+			children = (
+				89F2B40117E4EE530059E80F /* CMMapLauncher.h */,
+				89F2B40217E4EE530059E80F /* CMMapLauncher.m */,
+			);
+			path = CMMapLauncher;
+			sourceTree = "<group>";
+		};
 		F4AA6C1C1589A2DF0093D97E = {
 			isa = PBXGroup;
 			children = (
+				89F2B40417E4EF150059E80F /* MapKit.framework */,
+				89F2B40017E4EE530059E80F /* CMMapLauncher */,
 				89F2B3FE17E4B5540059E80F /* CoreLocation.framework */,
 				F4AA6C311589A2DF0093D97E /* RecipeBook */,
 				F4AA6C2A1589A2DF0093D97E /* Frameworks */,
@@ -103,6 +123,8 @@
 				F4379A47159741E600CAD93E /* AboutViewController.m */,
 				F4379A4A1597775500CAD93E /* about.jpg */,
 				F4379A4B1597775500CAD93E /* about.html */,
+				89F2B40617E4F1110059E80F /* MapViewController.h */,
+				89F2B40717E4F1110059E80F /* MapViewController.m */,
 			);
 			path = RecipeBook;
 			sourceTree = "<group>";
@@ -188,6 +210,8 @@
 				F4AA6C421589A2DF0093D97E /* RecipeBookViewController.m in Sources */,
 				F419149E158D558600E54887 /* RecipeDetailViewController.m in Sources */,
 				F4379A48159741E700CAD93E /* AboutViewController.m in Sources */,
+				89F2B40317E4EE530059E80F /* CMMapLauncher.m in Sources */,
+				89F2B40817E4F1110059E80F /* MapViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
