@@ -38,7 +38,6 @@
     [locationManager startUpdatingLocation];
     bestEffortAtLocation = nil;
     
-    [self buildRequest];
     recipes = [[NSMutableArray alloc] initWithCapacity:0];
     // recipes = [NSArray arrayWithObjects:@"Egg Benedict", @"Mushroom Risotto", @"Full Breakfast", @"Hamburger", @"Ham and Egg Sandwich", @"Creme Brelee", @"White Chocolate Donut", @"Starbucks Coffee", @"Vegetable Curry", @"Instant Noodle with Egg", @"Noodle with BBQ Pork", @"Japanese Noodle with Pork", @"Green Tea", @"Thai Shrimp Cake", @"Angry Birds Cake", @"Ham and Cheese Panini", nil];
 }
@@ -73,8 +72,9 @@
     return returnUrl;
 }
 
--(void) buildRequest
+-(void)buildRequest:(NSString*)searchStr
 {
+    NSLog(@"Search string = %@",searchStr);
     NSString* apiUrl = @"http://pavansri.apiary.io/shopping-cart";
     if(bestEffortAtLocation)
     {
@@ -88,8 +88,14 @@
                                       bestEffortAtLocation.coordinate.longitude];
         NSDictionary* latLongDict = [[NSDictionary alloc] initWithObjectsAndKeys:currentLatitude, @"lat", currentLongitude, @"long", nil];
         
-        [self addFKParams:latLongDict ToUrl:apiUrl];
+        apiUrl = [self addFKParams:latLongDict ToUrl:apiUrl];
         
+    }
+    
+    if(searchStr)
+    {
+        NSDictionary* searchDict = [[NSDictionary alloc] initWithObjectsAndKeys:searchStr, @"searchStr", nil];
+        apiUrl = [self addFKParams:searchDict ToUrl:apiUrl];
     }
     
     NSLog(@"Request Url = %@", apiUrl);
@@ -122,13 +128,18 @@
     
     // extract specific value...
     NSArray *results = [res objectForKey:@"items"];
-    
+    [recipes removeAllObjects];
     for (NSDictionary *result in results) {
         NSString *nameStr = [result objectForKey:@"name"];
         [recipes addObject:nameStr];
     }
     
     [self.tableView reloadData];
+}
+
+-(void) buildRequest
+{
+    [self buildRequest:nil];
 }
 
 
@@ -150,13 +161,6 @@
    didUpdateToLocation:(CLLocation *)newLocation
           fromLocation:(CLLocation *)oldLocation
 {
-    NSString *currentLatitude = [[NSString alloc]
-                                 initWithFormat:@"%g",
-                                 newLocation.coordinate.latitude];
-    
-    NSString *currentLongitude = [[NSString alloc]
-                                  initWithFormat:@"%g",
-                                  newLocation.coordinate.longitude];
     
     //If the location changes update or else no.
     if(bestEffortAtLocation
@@ -167,11 +171,17 @@
     }
     else{
         bestEffortAtLocation = newLocation;
-        [self buildRequest];
     }
     
-    //NSLog(@"lat = %@ long = %@", currentLatitude, currentLongitude);
-    
+    /* NSString *currentLatitude = [[NSString alloc]
+     initWithFormat:@"%g",
+     newLocation.coordinate.latitude];
+     
+     NSString *currentLongitude = [[NSString alloc]
+     initWithFormat:@"%g",
+     newLocation.coordinate.longitude];
+     NSLog(@"lat = %@ long = %@", currentLatitude, currentLongitude);
+     */
     
 }
 
@@ -217,6 +227,7 @@
         RecipeDetailViewController *destViewController = segue.destinationViewController;
         
         NSIndexPath *indexPath = nil;
+        self.searchDisplayController.active = false;
         if ([self.searchDisplayController isActive]) {
             indexPath = [self.searchDisplayController.searchResultsTableView indexPathForSelectedRow];
             destViewController.recipeName = [searchResults objectAtIndex:indexPath.row];
@@ -231,35 +242,35 @@
 
 - (void)filterContentForSearchText:(NSString*)searchText scope:(NSString*)scope
 {
-    NSPredicate *resultPredicate = [NSPredicate
-                                    predicateWithFormat:@"SELF contains[cd] %@",
-                                    searchText];
-    
-    searchResults = [recipes filteredArrayUsingPredicate:resultPredicate];
+    //    NSPredicate *resultPredicate = [NSPredicate
+    //                                    predicateWithFormat:@"SELF contains[cd] %@",
+    //                                    searchText];
+    //
+    [self buildRequest:searchText];
+    searchResults = recipes; //[recipes filteredArrayUsingPredicate:resultPredicate];
 }
 
-#pragma mark - UISearchDisplayController delegate methods
--(BOOL)searchDisplayController:(UISearchDisplayController *)controller
-shouldReloadTableForSearchString:(NSString *)searchString
+
+//#pragma mark - UISearchDisplayController delegate methods
+//-(BOOL)searchDisplayController:(UISearchDisplayController *)controller
+//shouldReloadTableForSearchString:(NSString *)searchString
+//{
+//
+////    [self filterContentForSearchText:searchString
+////                               scope:[[self.searchDisplayController.searchBar scopeButtonTitles]
+////                                      objectAtIndex:[self.searchDisplayController.searchBar
+////                                                     selectedScopeButtonIndex]]];
+////
+//        searchResults = recipes;
+//  return YES;
+//}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-    [self filterContentForSearchText:searchString
-                               scope:[[self.searchDisplayController.searchBar scopeButtonTitles]
-                                      objectAtIndex:[self.searchDisplayController.searchBar
-                                                     selectedScopeButtonIndex]]];
-    
-    return YES;
+    [searchBar resignFirstResponder];
+    self.searchDisplayController.active = false;
+    NSString* searchString = searchBar.text;
+    [self filterContentForSearchText:searchString scope:nil];
 }
 
-/*
- - (BOOL)searchDisplayController:(UISearchDisplayController *)controller
- shouldReloadTableForSearchScope:(NSInteger)searchOption
- {
- [self filterContentForSearchText:[self.searchDisplayController.searchBar text]
- scope:[[self.searchDisplayController.searchBar scopeButtonTitles]
- objectAtIndex:searchOption]];
- 
- return YES;
- }
- 
- */
 @end
